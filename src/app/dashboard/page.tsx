@@ -56,7 +56,7 @@ export default function DashboardPage() {
         
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Link 
-            href="/customers/new" 
+            href="/dashboard/customers/new" 
             style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
@@ -72,7 +72,7 @@ export default function DashboardPage() {
             New Customer
           </Link>
           <Link 
-            href="/invoices/create" 
+            href="/dashboard/invoices/create" 
             style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
