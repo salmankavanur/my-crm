@@ -115,7 +115,7 @@ export default function RecentInvoices() {
         {displayInvoices.map((invoice) => (
           <li key={invoice._id}>
             <Link 
-              href={`/invoices/${invoice._id}`}
+              href={`/dashboard/invoices/${invoice._id}`}
               className="block hover:bg-gray-50"
             >
               <div className="flex items-center px-4 py-4 sm:px-6">
@@ -155,7 +155,7 @@ export default function RecentInvoices() {
       </ul>
       <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-right">
         <Link 
-          href="/invoices" 
+          href="/dashboard/invoices" 
           className="text-sm font-medium text-indigo-600 hover:text-indigo-900"
         >
           View all invoices
