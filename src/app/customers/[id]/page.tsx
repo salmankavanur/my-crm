@@ -10,13 +10,41 @@ interface CustomerDetailPageProps {
   };
 }
 
-async function getCustomer(id: string) {
-  await dbConnect();
-  const customer = await Customer.findById(id);
-  return JSON.parse(JSON.stringify(customer));
+// Define interface for Customer
+interface CustomerData {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
+  notes?: string;
 }
 
-async function getCustomerInvoices(customerId: string) {
+// Define interface for Invoice
+interface InvoiceData {
+  _id: string;
+  invoiceNumber: string;
+  customer: string | CustomerData;
+  issueDate: string;
+  total: number;
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  createdAt?: string;
+}
+
+async function getCustomer(id: string): Promise<CustomerData | null> {
+  await dbConnect();
+  const customer = await Customer.findById(id);
+  return customer ? JSON.parse(JSON.stringify(customer)) : null;
+}
+
+async function getCustomerInvoices(customerId: string): Promise<InvoiceData[]> {
   await dbConnect();
   const invoices = await Invoice.find({ customer: customerId })
     .sort({ createdAt: -1 })
@@ -30,6 +58,8 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
   try {
     const customer = await getCustomer(customerId);
     const invoices = await getCustomerInvoices(customerId);
+
+    if (!customer) throw new Error('Customer not found');
 
     return (
       <div className="space-y-6">
@@ -79,7 +109,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Phone number</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{customer.phone}</dd>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{customer.phone || '-'}</dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Company</dt>
@@ -88,7 +118,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Address</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {customer.address?.street && (
+                  {customer.address?.street ? (
                     <>
                       {customer.address.street}<br />
                       {customer.address.city && customer.address.city}
@@ -96,8 +126,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
                       {customer.address.zipCode && ` ${customer.address.zipCode}`}<br />
                       {customer.address.country && customer.address.country}
                     </>
-                  )}
-                  {!customer.address?.street && '-'}
+                  ) : '-'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -148,7 +177,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {invoices.map((invoice) => (
+                  {invoices.map((invoice: InvoiceData) => (
                     <tr key={invoice._id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
                         <Link href={`/invoices/${invoice._id}`} className="hover:underline">
