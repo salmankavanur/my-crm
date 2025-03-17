@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { 
   FiMenu, FiBell, FiUser, FiSearch, FiChevronDown, 
-  FiSettings, FiHelpCircle, FiLogOut, FiMoon, FiSun 
+  FiSettings, FiHelpCircle, FiLogOut, FiMoon, FiSun,
+  FiFileText, FiUsers 
 } from 'react-icons/fi';
 
 const Header = () => {
