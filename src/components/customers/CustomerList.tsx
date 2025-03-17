@@ -32,7 +32,7 @@ export default function CustomerList() {
   const [filterOptions, setFilterOptions] = useState({
     status: '',
     sortBy: 'name',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showActionMenu, setShowActionMenu] = useState<string | null>(null);
@@ -49,14 +49,8 @@ export default function CustomerList() {
         queryParams.append('search', search);
       }
 
-      // In a real app, you would add filters and sorting to the query params
-
       const response = await fetch(`/api/customers?${queryParams}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch customers');
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch customers');
       const data = await response.json();
       setCustomers(data.customers);
       setPaginationInfo(data.pageInfo);
@@ -71,48 +65,12 @@ export default function CustomerList() {
     fetchCustomers(1, searchQuery);
   }, [searchQuery]);
 
-  // Placeholder data for development
   const placeholderCustomers = [
-    {
-      _id: '1',
-      name: 'Sarah Johnson',
-      email: 'sarah@example.com',
-      phone: '(555) 123-4567',
-      company: 'Acme Inc',
-      createdAt: '2023-03-15T14:30:00Z',
-    },
-    {
-      _id: '2',
-      name: 'Michael Chen',
-      email: 'michael@example.com',
-      phone: '(555) 234-5678',
-      company: 'Tech Solutions',
-      createdAt: '2023-03-14T09:15:00Z',
-    },
-    {
-      _id: '3',
-      name: 'Jessica Williams',
-      email: 'jessica@example.com',
-      phone: '(555) 345-6789',
-      company: 'Creative Designs',
-      createdAt: '2023-03-13T16:45:00Z',
-    },
-    {
-      _id: '4',
-      name: 'David Brown',
-      email: 'david@example.com',
-      phone: '(555) 456-7890',
-      company: 'Brown Consulting',
-      createdAt: '2023-03-12T11:20:00Z',
-    },
-    {
-      _id: '5',
-      name: 'Emma Rodriguez',
-      email: 'emma@example.com',
-      phone: '(555) 567-8901',
-      company: 'Global Imports',
-      createdAt: '2023-03-11T13:50:00Z',
-    },
+    { _id: '1', name: 'Sarah Johnson', email: 'sarah@example.com', phone: '(555) 123-4567', company: 'Acme Inc', createdAt: '2023-03-15T14:30:00Z' },
+    { _id: '2', name: 'Michael Chen', email: 'michael@example.com', phone: '(555) 234-5678', company: 'Tech Solutions', createdAt: '2023-03-14T09:15:00Z' },
+    { _id: '3', name: 'Jessica Williams', email: 'jessica@example.com', phone: '(555) 345-6789', company: 'Creative Designs', createdAt: '2023-03-13T16:45:00Z' },
+    { _id: '4', name: 'David Brown', email: 'david@example.com', phone: '(555) 456-7890', company: 'Brown Consulting', createdAt: '2023-03-12T11:20:00Z' },
+    { _id: '5', name: 'Emma Rodriguez', email: 'emma@example.com', phone: '(555) 567-8901', company: 'Global Imports', createdAt: '2023-03-11T13:50:00Z' },
   ];
 
   const displayCustomers = customers.length > 0 ? customers : placeholderCustomers;
@@ -126,15 +84,8 @@ export default function CustomerList() {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        const response = await fetch(`/api/customers/${id}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to delete customer');
-        }
-
-        // Refresh the customer list
+        const response = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete customer');
         fetchCustomers(paginationInfo.currentPage, searchQuery);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -143,11 +94,7 @@ export default function CustomerList() {
   };
 
   const toggleActionMenu = (id: string) => {
-    if (showActionMenu === id) {
-      setShowActionMenu(null);
-    } else {
-      setShowActionMenu(id);
-    }
+    setShowActionMenu(showActionMenu === id ? null : id);
   };
 
   const sortableColumns = [
@@ -158,50 +105,42 @@ export default function CustomerList() {
   ];
 
   const handleSort = (columnId: string) => {
-    // In a real app, you would update the sort and refetch
     const newSortOrder = filterOptions.sortBy === columnId && filterOptions.sortOrder === 'asc' ? 'desc' : 'asc';
-    setFilterOptions({
-      ...filterOptions,
-      sortBy: columnId,
-      sortOrder: newSortOrder
-    });
+    setFilterOptions({ ...filterOptions, sortBy: columnId, sortOrder: newSortOrder });
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white shadow-md rounded-lg overflow-hidden">
       {loading && (
         <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
           <div className="loader"></div>
         </div>
       )}
-      
       <div className="overflow-x-auto">
-        <table className="premium-table">
-          <thead>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
               {sortableColumns.map((column) => (
-                <th 
+                <th
                   key={column.id}
-                  className="premium-table-header cursor-pointer"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort(column.id)}
                 >
                   <div className="flex items-center">
-                    <span>{column.label}</span>
+                    {column.label}
                     {filterOptions.sortBy === column.id && (
-                      <FiChevronDown 
-                        className={`ml-1 h-4 w-4 ${filterOptions.sortOrder === 'desc' ? 'transform rotate-180' : ''}`} 
-                      />
+                      <FiChevronDown className={`ml-1 h-4 w-4 ${filterOptions.sortOrder === 'desc' ? 'transform rotate-180' : ''}`} />
                     )}
                   </div>
                 </th>
               ))}
-              <th className="premium-table-header text-right">Actions</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200">
             {displayCustomers.map((customer) => (
-              <tr key={customer._id} className="premium-table-row">
-                <td className="premium-table-cell">
+              <tr key={customer._id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
                       <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -217,7 +156,7 @@ export default function CustomerList() {
                     </div>
                   </div>
                 </td>
-                <td className="premium-table-cell">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
                       <FiMail className="h-4 w-4 text-gray-400" />
@@ -233,47 +172,21 @@ export default function CustomerList() {
                     </div>
                   </div>
                 </td>
-                <td className="premium-table-cell">
-                  <div className="text-sm text-gray-500">
-                    {customer.company ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-blue-50 text-blue-700">
-                        {customer.company}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {customer.company || '-'}
                 </td>
-                <td className="premium-table-cell">
-                  <div className="text-sm text-gray-500">
-                    {new Date(customer.createdAt).toLocaleDateString('en-US', { 
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {new Date(customer.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </td>
-                <td className="premium-table-cell text-right">
-                  <div className="flex justify-end items-center space-x-2">
-                    <Link 
-                      href={`/customers/${customer._id}`}
-                      className="text-gray-400 hover:text-indigo-600 p-1"
-                      title="View details"
-                    >
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex justify-end space-x-2">
+                    <Link href={`/customers/${customer._id}`} className="text-indigo-600 hover:text-indigo-900" title="View details">
                       <FiExternalLink className="h-5 w-5" />
                     </Link>
-                    <Link 
-                      href={`/customers/${customer._id}/edit`}
-                      className="text-gray-400 hover:text-indigo-600 p-1"
-                      title="Edit customer"
-                    >
+                    <Link href={`/customers/${customer._id}/edit`} className="text-indigo-600 hover:text-indigo-900" title="Edit customer">
                       <FiEdit2 className="h-5 w-5" />
                     </Link>
-                    <button
-                      onClick={() => handleDelete(customer._id)}
-                      className="text-gray-400 hover:text-red-600 p-1"
-                      title="Delete customer"
-                    >
+                    <button onClick={() => handleDelete(customer._id)} className="text-red-600 hover:text-red-900" title="Delete customer">
                       <FiTrash2 className="h-5 w-5" />
                     </button>
                     <div className="relative">
@@ -284,7 +197,6 @@ export default function CustomerList() {
                       >
                         <FiMoreHorizontal className="h-5 w-5" />
                       </button>
-                      
                       {showActionMenu === customer._id && (
                         <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                           <div className="py-1">
@@ -294,17 +206,11 @@ export default function CustomerList() {
                             >
                               Create invoice
                             </Link>
-                            <a
-                              href={`mailto:${customer.email}`}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
+                            <a href={`mailto:${customer.email}`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Send email
                             </a>
                             <button
-                              onClick={() => {
-                                // Add to a segment/tag logic would go here
-                                toggleActionMenu(customer._id);
-                              }}
+                              onClick={() => toggleActionMenu(customer._id)}
                               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               Add to segment
@@ -322,29 +228,28 @@ export default function CustomerList() {
       </div>
 
       {/* Pagination */}
-      <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+      <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
         <div className="flex-1 flex justify-between sm:hidden">
           <button
             onClick={() => handlePageChange(paginationInfo.currentPage - 1)}
             disabled={paginationInfo.currentPage === 1}
             className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FiChevronLeft className="mr-1 h-4 w-4" />
-            Previous
+            <FiChevronLeft className="mr-1 h-4 w-4" /> Previous
           </button>
           <button
             onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
             disabled={paginationInfo.currentPage === paginationInfo.totalPages}
             className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Next
-            <FiChevronRight className="ml-1 h-4 w-4" />
+            Next <FiChevronRight className="ml-1 h-4 w-4" />
           </button>
         </div>
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{((paginationInfo.currentPage - 1) * 10) + 1}</span> to{' '}
+              Showing{' '}
+              <span className="font-medium">{((paginationInfo.currentPage - 1) * 10) + 1}</span> to{' '}
               <span className="font-medium">
                 {Math.min(paginationInfo.currentPage * 10, paginationInfo.totalCustomers || 10)}
               </span>{' '}
@@ -361,8 +266,6 @@ export default function CustomerList() {
                 <span className="sr-only">Previous</span>
                 <FiChevronLeft className="h-5 w-5" />
               </button>
-              
-              {/* Page numbers - simplifying to just show up to 5 pages for this demo */}
               {Array.from({ length: Math.min(5, paginationInfo.totalPages || 1) }).map((_, index) => {
                 const pageNumber = index + 1;
                 return (
@@ -379,10 +282,9 @@ export default function CustomerList() {
                   </button>
                 );
               })}
-              
               <button
                 onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
-                disabled={paginationInfo.currentPage === (paginationInfo.totalPages || 1)}
+                disabled={paginationInfo.currentPage === paginationInfo.totalPages}
                 className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Next</span>
@@ -392,8 +294,7 @@ export default function CustomerList() {
           </div>
         </div>
       </div>
-      
-      {/* Quick actions panel - shows when a customer is selected */}
+
       {selectedCustomer && (
         <div className="fixed bottom-0 inset-x-0 pb-2 sm:pb-5">
           <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
