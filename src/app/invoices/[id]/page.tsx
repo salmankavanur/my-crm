@@ -3,16 +3,50 @@ import { FiEdit2, FiPrinter, FiArrowLeft, FiMail, FiDownload } from 'react-icons
 import dbConnect from '@/lib/db';
 import Invoice from '@/models/Invoice';
 
+// Define interfaces for type safety
+interface InvoiceItem {
+  description: string;
+  quantity: number;
+  price: number;
+  total: number;
+}
+
+interface InvoiceData {
+  _id: string;
+  invoiceNumber: string;
+  customer: {
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    address?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
+    };
+  };
+  issueDate: string;
+  dueDate: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  notes?: string;
+}
+
 interface InvoiceDetailPageProps {
   params: {
     id: string;
   };
 }
 
-async function getInvoice(id: string) {
+async function getInvoice(id: string): Promise<InvoiceData | null> {
   await dbConnect();
   const invoice = await Invoice.findById(id).populate('customer', 'name email phone company address');
-  return JSON.parse(JSON.stringify(invoice));
+  return invoice ? JSON.parse(JSON.stringify(invoice)) : null;
 }
 
 export default async function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
@@ -20,6 +54,8 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
   
   try {
     const invoice = await getInvoice(invoiceId);
+
+    if (!invoice) throw new Error('Invoice not found');
 
     // Format dates
     const issueDate = new Date(invoice.issueDate).toLocaleDateString();
@@ -167,7 +203,7 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {invoice.items.map((item, index) => (
+                  {invoice.items.map((item: InvoiceItem, index: number) => (
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-normal text-sm text-gray-900">
                         {item.description}
