@@ -149,7 +149,7 @@ export default function CustomerList() {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
-                        <Link href={`/customers/${customer._id}`} className="hover:text-indigo-600">
+                        <Link href={`/dashboard/customers/${customer._id}`} className="hover:text-indigo-600">
                           {customer.name}
                         </Link>
                       </div>
@@ -180,10 +180,10 @@ export default function CustomerList() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/customers/${customer._id}`} className="text-indigo-600 hover:text-indigo-900" title="View details">
+                    <Link href={`/dashboard//customers/${customer._id}`} className="text-indigo-600 hover:text-indigo-900" title="View details">
                       <FiExternalLink className="h-5 w-5" />
                     </Link>
-                    <Link href={`/customers/${customer._id}/edit`} className="text-indigo-600 hover:text-indigo-900" title="Edit customer">
+                    <Link href={`/dashboard//customers/${customer._id}/edit`} className="text-indigo-600 hover:text-indigo-900" title="Edit customer">
                       <FiEdit2 className="h-5 w-5" />
                     </Link>
                     <button onClick={() => handleDelete(customer._id)} className="text-red-600 hover:text-red-900" title="Delete customer">
