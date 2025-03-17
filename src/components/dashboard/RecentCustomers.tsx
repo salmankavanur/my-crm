@@ -88,7 +88,7 @@ export default function RecentCustomers() {
         {displayCustomers.map((customer) => (
           <li key={customer._id}>
             <Link 
-              href={`/customers/${customer._id}`}
+              href={`/dashboard/customers/${customer._id}`}
               className="block hover:bg-gray-50"
             >
               <div className="flex items-center px-4 py-4 sm:px-6">
@@ -121,7 +121,7 @@ export default function RecentCustomers() {
       </ul>
       <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-right">
         <Link 
-          href="/customers" 
+          href="/dashboard/customers" 
           className="text-sm font-medium text-indigo-600 hover:text-indigo-900"
         >
           View all customers
