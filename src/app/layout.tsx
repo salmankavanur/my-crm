@@ -16,7 +16,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="dark-mode"> {/* Add dark-mode class by default to match your screenshot */}
+      <body>
+        {/* Starting in light mode by default (no dark-mode class) */}
         <div className="layout-container">
           <Sidebar />
           
