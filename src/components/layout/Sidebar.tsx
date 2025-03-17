@@ -46,11 +46,11 @@ const Sidebar = () => {
       </div>
       
       <div className="sidebar-section">
-        <div className="flex items-center space-x-3 mx-3 mb-6 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-          <div className="avatar">N</div>
+        <div className="flex items-center space-x-3 mx-3 mb-6 p-3 rounded-lg bg-[var(--card-bg)] dark:bg-[var(--muted)] border border-[var(--border)]">
+          <div className="avatar bg-[var(--primary-light)] dark:bg-[var(--secondary)] text-white">N</div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">Admin User</p>
-            <p className="text-xs text-gray-500 truncate">admin@example.com</p>
+            <p className="text-sm font-medium truncate text-[var(--foreground)] dark:text-[var(--muted-foreground)]">Admin User</p>
+            <p className="text-xs text-[var(--muted-foreground)] truncate">admin@example.com</p>
           </div>
         </div>
         
