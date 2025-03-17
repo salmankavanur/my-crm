@@ -123,8 +123,8 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
               href={`/dashboard/invoices/${invoiceId}/edit`}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <FiEdit2 className="mr-2 -ml-1 h-5 w-5" />
-              Edit
+              <FiEdit2 className="mr-2 -ml-1 h-5 w-5 text-white" />
+              <span className="text-white"> Edit </span>
             </Link>
           </div>
         </div>
@@ -262,8 +262,8 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
             href="/dashboard/invoices"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            <FiArrowLeft className="mr-2 -ml-1 h-5 w-5" />
-            Back to Invoices
+            <FiArrowLeft className="mr-2 -ml-1 h-5 w-5 text-white" />
+            <span className="text-white"> Back to Invoices </span>
           </Link>
         </div>
       </div>
