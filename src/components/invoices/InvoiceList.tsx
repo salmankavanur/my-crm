@@ -202,7 +202,7 @@ export default function InvoiceList() {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
-                        <Link href={`/invoices/${invoice._id}`} className="hover:text-indigo-600">
+                        <Link href={`/dashboard/invoices/${invoice._id}`} className="hover:text-indigo-600">
                           {invoice.invoiceNumber}
                         </Link>
                       </div>
@@ -229,7 +229,7 @@ export default function InvoiceList() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/invoices/${invoice._id}/edit`} className="text-indigo-600 hover:text-indigo-900">
+                    <Link href={`/dashboard/invoices/${invoice._id}/edit`} className="text-indigo-600 hover:text-indigo-900">
                       <FiEdit2 className="h-5 w-5" />
                     </Link>
                     <button onClick={() => handleDelete(invoice._id)} className="text-red-600 hover:text-red-900">
