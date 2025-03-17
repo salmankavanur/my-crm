@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   FiMenu, FiBell, FiUser, FiSearch, FiChevronDown, 
   FiSettings, FiHelpCircle, FiLogOut, FiMoon, FiSun,
@@ -8,10 +9,12 @@ import {
 } from 'react-icons/fi';
 
 const Header = () => {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true); // Set to true to match your screenshot
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -44,6 +47,26 @@ const Header = () => {
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Implement logout functionality
+  const handleLogout = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    try {
+      setIsLoggingOut(true);
+      const response = await fetch('/api/auth/logout');
+      
+      if (response.ok) {
+        // Redirect to login page after successful logout
+        router.push('/login');
+      } else {
+        console.error('Logout failed');
+        setIsLoggingOut(false);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <header className="header">
@@ -135,8 +158,8 @@ const Header = () => {
             className="user-menu"
             onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
           >
-            <div className="avatar">N</div>
-            <span className="hidden sm:block font-medium">Admin User</span>
+            <div className="avatar">S</div>
+            <span className="hidden sm:block font-medium">Salman Mp</span>
             <FiChevronDown size={16} className="hidden sm:block ml-1" />
           </div>
           
@@ -157,9 +180,13 @@ const Header = () => {
                   Help Center
                 </a>
                 <div className="border-t border-gray-100 dark:border-gray-700"></div>
-                <a href="/logout" className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a 
+                  href="#" 
+                  onClick={handleLogout}
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
                   <FiLogOut className="mr-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Sign out
+                  {isLoggingOut ? 'Signing out...' : 'Sign out'}
                 </a>
               </div>
             </div>
@@ -225,6 +252,16 @@ const Header = () => {
                   >
                     <FiSettings className="mr-3 h-6 w-6" />
                     <span className="text-base font-medium">Settings</span>
+                  </a>
+                  <a
+                    href="#"
+                    onClick={handleLogout}
+                    className="flex items-center p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <FiLogOut className="mr-3 h-6 w-6" />
+                    <span className="text-base font-medium">
+                      {isLoggingOut ? 'Signing out...' : 'Sign out'}
+                    </span>
                   </a>
                 </nav>
               </div>

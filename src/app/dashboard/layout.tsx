@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '../globals.css';
+import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+
 
 export const metadata: Metadata = {
   title: 'My CRM - Customer Relationship Management',
@@ -15,11 +19,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {/* Starting in light mode by default (no dark-mode class) */}
-        <div className="layout-container"> 
+        <div className="layout-container">
+          <Sidebar />
+          
           <div className="main-content">
+            <Header />
             <main className="page-content">
               {children}
             </main>
+            <Footer />
           </div>
         </div>
       </body>

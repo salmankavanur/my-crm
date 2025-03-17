@@ -1,18 +1,18 @@
 import Link from 'next/link';
-import { FiUserPlus, FiFilter } from 'react-icons/fi';
-import CustomerList from '@/components/customers/CustomerList';
+import { FiFileText, FiFilter } from 'react-icons/fi';
+import InvoiceList from '@/components/invoices/InvoiceList';
 
-export default function CustomersPage() {
+export default function InvoicesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Invoices</h1>
         <Link 
-          href="/customers/new" 
+          href="/dashboard/invoices/create" 
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          <FiUserPlus className="mr-2 -ml-1 h-5 w-5" />
-          New Customer
+          <FiFileText className="mr-2 -ml-1 h-5 w-5" />
+          New Invoice
         </Link>
       </div>
 
@@ -21,7 +21,7 @@ export default function CustomersPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0 mb-6">
             <div className="w-full sm:w-64">
               <label htmlFor="search" className="sr-only">
-                Search customers
+                Search invoices
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -34,7 +34,7 @@ export default function CustomersPage() {
                   name="search"
                   id="search"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Search customers..."
+                  placeholder="Search invoices..."
                 />
               </div>
             </div>
@@ -51,14 +51,17 @@ export default function CustomersPage() {
                 name="status"
                 className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               >
-                <option value="">All Customers</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="">All Invoices</option>
+                <option value="draft">Draft</option>
+                <option value="sent">Sent</option>
+                <option value="paid">Paid</option>
+                <option value="overdue">Overdue</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           </div>
 
-          <CustomerList />
+          <InvoiceList />
         </div>
       </div>
     </div>

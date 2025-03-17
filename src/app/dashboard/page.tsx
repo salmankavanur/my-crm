@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { 
   FiUserPlus, 
@@ -10,8 +12,40 @@ import {
   FiPieChart,
   FiClock
 } from 'react-icons/fi';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // We'll use a simple fetch to check auth status
+        // This is optional since we already have middleware protection
+        const response = await fetch('/api/auth/check', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          // Redirect to login if not authenticated
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        // On error, redirect to login as a fallback
+        router.push('/login');
+      }
+    };
+
+    // Uncomment this if you want an additional auth check beyond middleware
+    // checkAuth();
+  }, [router]);
+
   return (
     <div style={{ padding: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>

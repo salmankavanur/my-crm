@@ -19,8 +19,8 @@ const Sidebar = () => {
 
   const mainNavItems = [
     { name: 'Dashboard', href: '/dashboard', icon: FiHome },
-    { name: 'Customers', href: '/customers', icon: FiUsers },
-    { name: 'Invoices', href: '/invoices', icon: FiFileText },
+    { name: 'Customers', href: '/dashboard/customers', icon: FiUsers },
+    { name: 'Invoices', href: '/dashboard/invoices', icon: FiFileText },
     { name: 'Reports', href: '/reports', icon: FiBarChart2 },
   ];
   
@@ -89,7 +89,7 @@ const Sidebar = () => {
   <div className="upgrade-card">
     <h3 className="upgrade-title">Create New Invoice</h3>
     <p className="upgrade-desc">Bill your clients quickly and efficiently</p>
-    <Link href="/invoices/create">
+    <Link href="/dashboard/invoices/create">
       <button className="upgrade-button">Create Now</button>
     </Link>
   </div>
