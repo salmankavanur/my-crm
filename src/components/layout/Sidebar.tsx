@@ -86,12 +86,14 @@ const Sidebar = () => {
       </div>
       
       <div className="sidebar-upgrade">
-        <div className="upgrade-card">
-          <h3 className="upgrade-title">Upgrade to Pro</h3>
-          <p className="upgrade-desc">Get advanced features and priority support</p>
-          <button className="upgrade-button">Upgrade Now</button>
-        </div>
-      </div>
+  <div className="upgrade-card">
+    <h3 className="upgrade-title">Create New Invoice</h3>
+    <p className="upgrade-desc">Bill your clients quickly and efficiently</p>
+    <Link href="/invoices/create">
+      <button className="upgrade-button">Create Now</button>
+    </Link>
+  </div>
+</div>
     </aside>
   );
 };
