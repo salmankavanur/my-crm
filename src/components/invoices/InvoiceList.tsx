@@ -46,19 +46,11 @@ export default function InvoiceList() {
         limit: '10',
       });
 
-      if (search) {
-        queryParams.append('search', search);
-      }
-
-      if (status) {
-        queryParams.append('status', status);
-      }
+      if (search) queryParams.append('search', search);
+      if (status) queryParams.append('status', status);
 
       const response = await fetch(`/api/invoices?${queryParams}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch invoices');
-      }
+      if (!response.ok) throw new Error('Failed to fetch invoices');
       
       const data = await response.json();
       setInvoices(data.invoices);
@@ -75,7 +67,7 @@ export default function InvoiceList() {
   }, [searchQuery, statusFilter]);
 
   // Placeholder data for development
-  const placeholderInvoices = [
+  const placeholderInvoices: Invoice[] = [
     {
       _id: '1',
       invoiceNumber: 'INV-2023-001',
@@ -83,7 +75,7 @@ export default function InvoiceList() {
       issueDate: '2023-03-15T00:00:00Z',
       dueDate: '2023-03-30T00:00:00Z',
       total: 1250.00,
-      status: 'paid' as const,
+      status: 'paid',
     },
     {
       _id: '2',
@@ -92,7 +84,7 @@ export default function InvoiceList() {
       issueDate: '2023-03-20T00:00:00Z',
       dueDate: '2023-04-15T00:00:00Z',
       total: 875.50,
-      status: 'sent' as const,
+      status: 'sent',
     },
     {
       _id: '3',
@@ -101,7 +93,7 @@ export default function InvoiceList() {
       issueDate: '2023-02-25T00:00:00Z',
       dueDate: '2023-03-10T00:00:00Z',
       total: 2340.00,
-      status: 'overdue' as const,
+      status: 'overdue',
     },
     {
       _id: '4',
@@ -110,7 +102,7 @@ export default function InvoiceList() {
       issueDate: '2023-03-22T00:00:00Z',
       dueDate: '2023-04-20T00:00:00Z',
       total: 1100.00,
-      status: 'draft' as const,
+      status: 'draft',
     },
     {
       _id: '5',
@@ -119,7 +111,7 @@ export default function InvoiceList() {
       issueDate: '2023-03-18T00:00:00Z',
       dueDate: '2023-04-05T00:00:00Z',
       total: 3560.25,
-      status: 'sent' as const,
+      status: 'sent',
     },
   ];
 
@@ -138,11 +130,7 @@ export default function InvoiceList() {
           method: 'DELETE',
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to delete invoice');
-        }
-
-        // Refresh the invoice list
+        if (!response.ok) throw new Error('Failed to delete invoice');
         fetchInvoices(paginationInfo.currentPage, searchQuery, statusFilter);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -150,51 +138,56 @@ export default function InvoiceList() {
     }
   };
 
-  // Function to get status color
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
-        return 'bg-green-100 text-green-800';
-      case 'sent':
-        return 'bg-blue-100 text-blue-800';
-      case 'draft':
-        return 'bg-gray-100 text-gray-800';
-      case 'overdue':
-        return 'bg-red-100 text-red-800';
-      case 'cancelled':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'sent': return 'bg-blue-100 text-blue-800';
+      case 'draft': return 'bg-gray-100 text-gray-800';
+      case 'overdue': return 'bg-red-100 text-red-800';
+      case 'cancelled': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
-    <div>
+    <div className="px-4 sm:px-6 lg:px-8">
+      {/* Search and Filter Controls */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-4">
+        <input
+          type="text"
+          placeholder="Search invoices..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md w-full sm:w-64"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md w-full sm:w-48"
+        >
+          <option value="">All Statuses</option>
+          <option value="draft">Draft</option>
+          <option value="sent">Sent</option>
+          <option value="paid">Paid</option>
+          <option value="overdue">Overdue</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      {loading && <p className="text-center">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Invoice #
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Customer
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Issue Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Due Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" className="relative px-6 py-3">
-                <span className="sr-only">Actions</span>
-              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -236,16 +229,10 @@ export default function InvoiceList() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    <Link 
-                      href={`/invoices/${invoice._id}/edit`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
+                    <Link href={`/invoices/${invoice._id}/edit`} className="text-indigo-600 hover:text-indigo-900">
                       <FiEdit2 className="h-5 w-5" />
                     </Link>
-                    <button
-                      onClick={() => handleDelete(invoice._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
+                    <button onClick={() => handleDelete(invoice._id)} className="text-red-600 hover:text-red-900">
                       <FiTrash2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -278,9 +265,7 @@ export default function InvoiceList() {
           <div>
             <p className="text-sm text-gray-700">
               Showing <span className="font-medium">{((paginationInfo.currentPage - 1) * 10) + 1}</span> to{' '}
-              <span className="font-medium">
-                {Math.min(paginationInfo.currentPage * 10, paginationInfo.totalInvoices)}
-              </span>{' '}
+              <span className="font-medium">{Math.min(paginationInfo.currentPage * 10, paginationInfo.totalInvoices)}</span>{' '}
               of <span className="font-medium">{paginationInfo.totalInvoices}</span> results
             </p>
           </div>
@@ -296,8 +281,6 @@ export default function InvoiceList() {
                   <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </button>
-              
-              {/* Page numbers */}
               {[...Array(paginationInfo.totalPages)].map((_, index) => (
                 <button
                   key={index}
@@ -311,7 +294,6 @@ export default function InvoiceList() {
                   {index + 1}
                 </button>
               ))}
-              
               <button
                 onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
                 disabled={paginationInfo.currentPage === paginationInfo.totalPages}
@@ -328,3 +310,4 @@ export default function InvoiceList() {
       </div>
     </div>
   );
+}
