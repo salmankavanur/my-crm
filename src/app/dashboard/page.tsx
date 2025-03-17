@@ -167,7 +167,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Revenue</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>$54,250</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>₹54,250</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--success, #22c55e)', display: 'flex', alignItems: 'center' }}>
                 <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
                 12% from last month
@@ -198,7 +198,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Outstanding</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>$12,580</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>₹12,580</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--error, #ef4444)', display: 'flex', alignItems: 'center' }}>
                 <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
                 3% from last month

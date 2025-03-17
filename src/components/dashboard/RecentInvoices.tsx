@@ -139,7 +139,7 @@ export default function RecentInvoices() {
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-sm font-medium text-gray-900">
-                    ${invoice.total.toFixed(2)}
+                  ₹{invoice.total.toFixed(2)}
                   </span>
                   <span className={`mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
                     {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}

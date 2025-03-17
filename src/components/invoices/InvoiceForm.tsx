@@ -470,7 +470,7 @@ export default function InvoiceForm({ invoiceId, isEditMode = false }: InvoiceFo
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="relative rounded-md shadow-sm">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="text-gray-500 sm:text-sm">$</span>
+                            <span className="text-gray-500 sm:text-sm">₹</span>
                           </div>
                           <input
                             type="number"
@@ -530,7 +530,7 @@ export default function InvoiceForm({ invoiceId, isEditMode = false }: InvoiceFo
               <div className="flex justify-between py-2">
                 <span className="text-sm text-gray-700">Subtotal:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  ${watch('subtotal').toFixed(2)}
+                ₹{watch('subtotal').toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-2 items-center">
