@@ -1,426 +1,122 @@
 'use client';
 
 import Link from 'next/link';
-import { 
-  FiUserPlus, 
-  FiFileText, 
-  FiDollarSign, 
-  FiUsers, 
-  FiTrendingUp, 
-  FiCalendar, 
-  FiActivity,
-  FiPieChart,
-  FiClock
-} from 'react-icons/fi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  FiUserPlus, FiFileText, FiDollarSign, FiUsers,
+  FiTrendingUp, FiCalendar, FiActivity, FiPieChart, FiClock
+} from 'react-icons/fi';
+import RecentInvoices from '@/components/dashboard/RecentInvoices';
+import RecentCustomers from '@/components/dashboard/RecentCustomers';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [stats, setStats] = useState({
+    totalCustomers: 0,
+    totalInvoices: 0,
+    revenue: 0,
+    outstanding: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Check authentication on component mount
   useEffect(() => {
-    const checkAuth = async () => {
+    const fetchDashboardStats = async () => {
       try {
-        // We'll use a simple fetch to check auth status
-        // This is optional since we already have middleware protection
-        const response = await fetch('/api/auth/check', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (!response.ok) {
-          // Redirect to login if not authenticated
-          router.push('/login');
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const data = await response.json();
+        setStats(data);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unknown error occurred');
         }
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // On error, redirect to login as a fallback
-        router.push('/login');
+      } finally {
+        setLoading(false);
       }
     };
+    fetchDashboardStats();
+  }, []);
 
-    // Uncomment this if you want an additional auth check beyond middleware
-    // checkAuth();
-  }, [router]);
+  if (loading) return <p className="text-center text-gray-500">Loading dashboard...</p>;
+  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
-    <div style={{ padding: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Dashboard</h1>
-          <p style={{ color: 'var(--gray-500)' }}>Welcome back! Here's what's happening with your business today.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600">Welcome back! Here’s an overview of your business.</p>
         </div>
-        
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link 
-            href="/dashboard/customers/new" 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              padding: '0.5rem 1rem', 
-              backgroundColor: 'var(--primary, #3b82f6)', 
-              color: 'white', 
-              borderRadius: '0.375rem',
-              fontWeight: '500',
-              textDecoration: 'none'
-            }}
-          >
-            <FiUserPlus style={{ marginRight: '0.5rem' }} size={18} />
-            New Customer
+        <div className="flex gap-4">
+          <Link href="/dashboard/customers/new" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700">
+            <FiUserPlus className="mr-2" /> New Customer
           </Link>
-          <Link 
-            href="/dashboard/invoices/create" 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              padding: '0.5rem 1rem', 
-              backgroundColor: 'var(--primary, #3b82f6)', 
-              color: 'white', 
-              borderRadius: '0.375rem',
-              fontWeight: '500',
-              textDecoration: 'none'
-            }}
-          >
-            <FiFileText style={{ marginRight: '0.5rem' }} size={18} />
-            New Invoice
+          <Link href="/dashboard/invoices/create" className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md shadow-md hover:bg-green-700">
+            <FiFileText className="mr-2" /> New Invoice
           </Link>
         </div>
       </div>
-      
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        padding: '1rem', 
-        marginBottom: '1.5rem', 
-        backgroundColor: 'white', 
-        borderRadius: '0.5rem', 
-        border: '1px solid var(--gray-200, #e5e7eb)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FiCalendar style={{ marginRight: '0.5rem', color: 'var(--gray-400, #9ca3af)' }} size={18} />
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Period:</span>
-          <select style={{ 
-            marginLeft: '0.5rem', 
-            backgroundColor: 'transparent', 
-            border: 'none', 
-            fontSize: '0.875rem',
-            outline: 'none'
-          }}>
-            <option>Last 30 Days</option>
-            <option>This Month</option>
-            <option>Last Quarter</option>
-            <option>This Year</option>
-          </select>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.75rem', color: 'var(--gray-500, #6b7280)' }}>
-          <span>Last updated: Today, 9:41 AM</span>
-          <FiClock style={{ marginLeft: '0.5rem' }} size={14} />
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+        {[
+          { label: 'Total Customers', value: stats.totalCustomers, icon: FiUsers, color: 'text-blue-600', bg: 'bg-blue-100' },
+          { label: 'Total Invoices', value: stats.totalInvoices, icon: FiFileText, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+          { label: 'Revenue', value: `₹${stats.revenue}`, icon: FiDollarSign, color: 'text-green-600', bg: 'bg-green-100' },
+          { label: 'Outstanding', value: `₹${stats.outstanding}`, icon: FiDollarSign, color: 'text-yellow-600', bg: 'bg-yellow-100' },
+        ].map(({ label, value, icon: Icon, color, bg }, index) => (
+          <div key={index} className="bg-white p-6 rounded-lg shadow-md flex justify-between items-center border border-gray-200">
+            <div>
+              <h3 className="text-sm text-gray-500 font-medium">{label}</h3>
+              <div className="text-2xl font-semibold text-gray-900">{value}</div>
+            </div>
+            <div className={`${bg} p-3 rounded-full`}> 
+              <Icon className={`${color} text-3xl`} />
+            </div>
+          </div>
+        ))}
       </div>
-      
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
-        gap: '1rem', 
-        marginBottom: '1.5rem' 
-      }}>
-        {/* Total Customers */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          padding: '1.25rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Total Customers</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>152</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--success, #22c55e)', display: 'flex', alignItems: 'center' }}>
-                <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
-                15% from last month
-              </div>
-            </div>
-            <div style={{ 
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '50%', 
-              backgroundColor: 'rgba(59, 130, 246, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
-            }}>
-              <FiUsers size={24} style={{ color: 'var(--primary, #3b82f6)' }} />
-            </div>
-          </div>
-        </div>
-        
-        {/* Total Invoices */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          padding: '1.25rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Total Invoices</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>289</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--success, #22c55e)', display: 'flex', alignItems: 'center' }}>
-                <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
-                8% from last month
-              </div>
-            </div>
-            <div style={{ 
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '50%', 
-              backgroundColor: 'rgba(99, 102, 241, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
-            }}>
-              <FiFileText size={24} style={{ color: 'var(--secondary, #6366f1)' }} />
-            </div>
-          </div>
-        </div>
-        
-        {/* Revenue */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          padding: '1.25rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Revenue</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>₹54,250</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--success, #22c55e)', display: 'flex', alignItems: 'center' }}>
-                <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
-                12% from last month
-              </div>
-            </div>
-            <div style={{ 
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '50%', 
-              backgroundColor: 'rgba(34, 197, 94, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
-            }}>
-              <FiDollarSign size={24} style={{ color: 'var(--success, #22c55e)' }} />
-            </div>
-          </div>
-        </div>
-        
-        {/* Outstanding */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          padding: '1.25rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', color: 'var(--gray-500, #6b7280)' }}>Outstanding</h3>
-              <div style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.25rem' }}>₹12,580</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--error, #ef4444)', display: 'flex', alignItems: 'center' }}>
-                <FiTrendingUp style={{ marginRight: '0.25rem' }} size={14} />
-                3% from last month
-              </div>
-            </div>
-            <div style={{ 
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '50%', 
-              backgroundColor: 'rgba(245, 158, 11, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
-            }}>
-              <FiDollarSign size={24} style={{ color: 'var(--warning, #f59e0b)' }} />
-            </div>
-          </div>
-        </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <RevenueOverview />
+        <SalesDistribution />
       </div>
-      
-      {/* Charts */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', 
-        gap: '1.5rem', 
-        marginBottom: '1.5rem' 
-      }}>
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)',
-          overflow: 'hidden',
-          height: '300px'
-        }}>
-          <div style={{ 
-            padding: '1rem 1.5rem', 
-            borderBottom: '1px solid var(--gray-200, #e5e7eb)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between' 
-          }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '500' }}>Revenue Overview</h3>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <select style={{ 
-                fontSize: '0.875rem', 
-                backgroundColor: 'transparent', 
-                border: 'none', 
-                paddingRight: '2rem',
-                outline: 'none'
-              }}>
-                <option>Last 6 months</option>
-                <option>This year</option>
-              </select>
-            </div>
-          </div>
-          <div style={{ 
-            height: '240px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            backgroundColor: 'var(--gray-50, #f9fafb)',
-            color: 'var(--gray-500, #6b7280)'
-          }}>
-            <FiActivity style={{ marginBottom: '1rem', opacity: 0.5 }} size={48} />
-            <p>Revenue trend chart would appear here</p>
-            <p style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>Using your preferred charting library</p>
-          </div>
-        </div>
-        
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)',
-          overflow: 'hidden',
-          height: '300px'
-        }}>
-          <div style={{ 
-            padding: '1rem 1.5rem', 
-            borderBottom: '1px solid var(--gray-200, #e5e7eb)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between' 
-          }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '500' }}>Sales Distribution</h3>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <select style={{ 
-                fontSize: '0.875rem', 
-                backgroundColor: 'transparent', 
-                border: 'none', 
-                paddingRight: '2rem',
-                outline: 'none'
-              }}>
-                <option>By Category</option>
-                <option>By Customer</option>
-              </select>
-            </div>
-          </div>
-          <div style={{ 
-            height: '240px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            backgroundColor: 'var(--gray-50, #f9fafb)',
-            color: 'var(--gray-500, #6b7280)'
-          }}>
-            <FiPieChart style={{ marginBottom: '1rem', opacity: 0.5 }} size={48} />
-            <p>Distribution chart would appear here</p>
-            <p style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>Using your preferred charting library</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Recent Activities */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', 
-        gap: '1.5rem'
-      }}>
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)',
-          overflow: 'hidden'
-        }}>
-          <div style={{ 
-            padding: '1rem 1.5rem', 
-            borderBottom: '1px solid var(--gray-200, #e5e7eb)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between' 
-          }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '500' }}>Recent Customers</h3>
-            <Link 
-              href="/customers" 
-              style={{ 
-                fontSize: '0.875rem', 
-                color: 'var(--primary, #3b82f6)', 
-                textDecoration: 'none' 
-              }}
-            >
-              View All
-            </Link>
-          </div>
-          <div style={{ padding: '1px' }}>
-            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--gray-500, #6b7280)' }}>
-              Recent customers will appear here
-            </div>
-          </div>
-        </div>
-        
-        <div style={{ 
-          backgroundColor: 'white', 
-          borderRadius: '0.5rem', 
-          boxShadow: 'var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05))', 
-          border: '1px solid var(--gray-200, #e5e7eb)',
-          overflow: 'hidden'
-        }}>
-          <div style={{ 
-            padding: '1rem 1.5rem', 
-            borderBottom: '1px solid var(--gray-200, #e5e7eb)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between' 
-          }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '500' }}>Recent Invoices</h3>
-            <Link 
-              href="/invoices" 
-              style={{ 
-                fontSize: '0.875rem', 
-                color: 'var(--primary, #3b82f6)', 
-                textDecoration: 'none' 
-              }}
-            >
-              View All
-            </Link>
-          </div>
-          <div style={{ padding: '1px' }}>
-            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--gray-500, #6b7280)' }}>
-              Recent invoices will appear here
-            </div>
-          </div>
-        </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <RecentCustomers />
+        <RecentInvoices />
       </div>
     </div>
   );
 }
+
+const RevenueOverview = () => {
+  return (
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden h-80">
+      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-gray-900">Revenue Overview</h3>
+      </div>
+      <div className="h-full flex flex-col items-center justify-center bg-gray-100 text-gray-600">
+        <FiActivity className="text-5xl opacity-50 mb-2" />
+        <p>Revenue trend chart would appear here</p>
+      </div>
+    </div>
+  );
+};
+
+const SalesDistribution = () => {
+  return (
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden h-80">
+      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-gray-900">Sales Distribution</h3>
+      </div>
+      <div className="h-full flex flex-col items-center justify-center bg-gray-100 text-gray-600">
+        <FiPieChart className="text-5xl opacity-50 mb-2" />
+        <p>Sales distribution chart would appear here</p>
+      </div>
+    </div>
+  );
+};
