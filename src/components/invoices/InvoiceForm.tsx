@@ -222,7 +222,7 @@ export default function InvoiceForm({ invoiceId, isEditMode = false }: InvoiceFo
 
       // Redirect after a short delay to show success message
       setTimeout(() => {
-        router.push(`/invoices/${result.invoice._id}`);
+        router.push(`/dashboard/invoices/${result.invoice._id}`);
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
