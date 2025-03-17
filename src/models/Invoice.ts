@@ -23,7 +23,7 @@ export interface IInvoice extends Document {
   updatedAt: Date;
 }
 
-const InvoiceSchema: Schema = new Schema(
+const InvoiceSchema: Schema<IInvoice> = new Schema(
   {
     invoiceNumber: { type: String, required: true, unique: true },
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
@@ -51,14 +51,14 @@ const InvoiceSchema: Schema = new Schema(
 );
 
 // Middleware to automatically calculate totals before saving
-InvoiceSchema.pre('save', function (next) {
+InvoiceSchema.pre('save', function (this: IInvoice, next) {
   // Calculate item totals
-  this.items.forEach((item) => {
+  this.items.forEach((item: InvoiceItem) => {
     item.total = item.quantity * item.price;
   });
 
   // Calculate subtotal
-  this.subtotal = this.items.reduce((sum, item) => sum + item.total, 0);
+  this.subtotal = this.items.reduce((sum: number, item: InvoiceItem) => sum + item.total, 0);
   
   // Calculate final total
   this.total = this.subtotal + this.tax;
