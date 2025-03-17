@@ -79,8 +79,8 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               href={`/dashboard/invoices/create?customerId=${customerId}`}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <FiFileText className="mr-2 -ml-1 h-5 w-5" />
-              New Invoice
+              <FiFileText className="mr-2 -ml-1 h-5 w-5 text-white" />
+              <span className="text-white">New Invoice</span>
             </Link>
             <Link
               href={`/dashboard/customers/${customerId}/edit`}
