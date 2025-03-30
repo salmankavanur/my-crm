@@ -1,50 +1,48 @@
-// src/models/Invoice.ts
+// src/models/Quotation.ts
 import mongoose, { Schema, Document } from 'mongoose';
 import { ICustomer } from './Customer';
 import { IBranch } from './Branch';
 
-interface InvoiceItem {
+interface QuotationItem {
   description: string;
   quantity: number;
   price: number;
   total: number;
 }
 
-export interface IInvoice extends Document {
-  invoiceNumber: string;
+export interface IQuotation extends Document {
+  quotationNumber: string;
   customer: mongoose.Types.ObjectId | ICustomer;
-  branch: mongoose.Types.ObjectId | IBranch;  // Added branch reference
+  branch: mongoose.Types.ObjectId | IBranch;
+  project?: mongoose.Types.ObjectId;
   issueDate: Date;
-  dueDate: Date;
-  items: InvoiceItem[];
+  validUntil: Date;
+  items: QuotationItem[];
   subtotal: number;
   tax: number;
-  taxRate: number;  // Store the tax rate used (from branch)
+  taxRate: number;
   total: number;
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-  currency: {  // Store the currency information at time of invoice creation
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted';
+  convertedToInvoiceId?: mongoose.Types.ObjectId;
+  currency: {
     code: string;
     symbol: string;
     name: string;
   };
   notes?: string;
-  paymentDetails?: {
-    method?: string;
-    transactionId?: string;
-    datePaid?: Date;
-    amount?: number;
-  };
+  terms?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const InvoiceSchema: Schema<IInvoice> = new Schema(
+const QuotationSchema: Schema<IQuotation> = new Schema(
   {
-    invoiceNumber: { type: String, required: true, unique: true },
+    quotationNumber: { type: String, required: true, unique: true },
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     branch: { type: Schema.Types.ObjectId, ref: 'Branch', required: true },
+    project: { type: Schema.Types.ObjectId, ref: 'Project' },
     issueDate: { type: Date, required: true },
-    dueDate: { type: Date, required: true },
+    validUntil: { type: Date, required: true },
     items: [
       {
         description: { type: String, required: true },
@@ -59,34 +57,30 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
     total: { type: Number, required: true },
     status: {
       type: String,
-      enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'],
+      enum: ['draft', 'sent', 'accepted', 'rejected', 'expired', 'converted'],
       default: 'draft',
     },
+    convertedToInvoiceId: { type: Schema.Types.ObjectId, ref: 'Invoice' },
     currency: {
       code: { type: String, required: true },
       symbol: { type: String, required: true },
       name: { type: String, required: true }
     },
     notes: { type: String },
-    paymentDetails: {
-      method: { type: String },
-      transactionId: { type: String },
-      datePaid: { type: Date },
-      amount: { type: Number }
-    }
+    terms: { type: String }
   },
   { timestamps: true }
 );
 
 // Middleware to automatically calculate totals before saving
-InvoiceSchema.pre('save', function (this: IInvoice, next) {
+QuotationSchema.pre('save', function (this: IQuotation, next) {
   // Calculate item totals
-  this.items.forEach((item: InvoiceItem) => {
+  this.items.forEach((item: QuotationItem) => {
     item.total = item.quantity * item.price;
   });
 
   // Calculate subtotal
-  this.subtotal = this.items.reduce((sum: number, item: InvoiceItem) => sum + item.total, 0);
+  this.subtotal = this.items.reduce((sum: number, item: QuotationItem) => sum + item.total, 0);
   
   // Calculate tax if tax rate is specified
   if (this.taxRate > 0) {
@@ -99,4 +93,4 @@ InvoiceSchema.pre('save', function (this: IInvoice, next) {
   next();
 });
 
-export default mongoose.models.Invoice || mongoose.model<IInvoice>('Invoice', InvoiceSchema);
+export default mongoose.models.Quotation || mongoose.model<IQuotation>('Quotation', QuotationSchema);
